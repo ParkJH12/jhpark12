@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean class="test.SayHello" id="myBean"/>
+
+<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
+
+<property name="driverClassName">
+<value>oracle.jdbc.driver.OracleDriver</value>
+</property>
+
+<property name="url">
+<value>jdbc:oracle:thin:@localhost:1521:XE</value>
+</property>
+
+<property name="username">
+<value>hr</value>
+</property>
+
+<property name="password">
+<value>hr</value>
+</property>
+
+
+</bean>
+
+<bean name="addrDao" class="addr.DaoImpl2">
+<property name="dataSource">
+<ref bean="dataSource"/>
+</property>
+</bean>
+
+<!-- property 를 이용함 -->
+
+<!-- <bean id="addrDao" class="addr.DaoImpl2">
+<constructor-arg>
+<ref bean="dataSource"/>
+</constructor-arg>
+</bean>
+ -->
+ 
+
+<bean name="addrService" class="addr.ServiceImpl" p:dao-ref="addrDao">
+</bean>
+
+
+<!-- 
+<bean id="addrService" class="addr.ServiceImpl">
+<constructor-arg>
+<ref bean="addrDao"/>
+</constructor-arg>
+</bean>
+ -->
+
+
+<bean name="propTest" class ="test.PropTest">
+<property name="p">
+<props>
+<prop key="ip">192.168.0.14</prop>
+<prop key="id">hr</prop>
+<prop key="pwd">hr</prop>
+</props>
+</property>
+</bean>
+
+
+
+
+
+
+</beans>

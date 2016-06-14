@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script type="text/javascript">
+      function isFilled() {
+        var form = document.login_form;
+        if(form.user_id.value == "") {
+          alert("아이디를 입력하세요.");
+          form.user_id.focus();
+        } else if(form.user_passwd.value == "") {
+          alert("비밀번호를 입력하세요.");
+          form.user_passwd.focus();
+        } else if(form.user_passwd.value != form.user_passwd2.value) {
+          alert("비밀번호가 일치하지 않습니다.")
+          form.user_passwd2.focus();
+        } else if(form.user_name.value == "") {
+          alert("이름을 입력하세요.");
+          form.user_name.focus();
+        } else if(form.user_gender.value == "") {
+          alert("성별을 선택하세요.");
+        } else if(form.user_address.value == "") {
+          alert("주소를 입력하세요.");
+          form.user_address.focus();
+        } else {
+          form.submit();
+        }
+      }
+    </script>
+    <style media="screen">
+      body {
+        background-image: url('http://i1.ruliweb.daumcdn.net/uf/original/U01/ruliweb/561262903F1E920010');
+        background-size:cover;
+      }
+      h1 {
+        font-size: 80px;
+        text-align: center;
+      }
+
+      #login {
+        width: 350px;
+        height: 200px;
+        margin:0 auto ;
+      }
+
+      input {
+        height: 40px;
+        width: 100% ;
+        font-size: 15px;
+      }
+
+      #button {
+        height: 30px;
+        width: 40%;
+      }
+
+      #a {
+        text-align: center;
+      }
+
+      #gender {
+        font-size: 40px;
+      }
+
+      .genderInput {
+        width: 30px;
+        height: 30px;
+      }
+    </style>
+    <title>회원가입 페이지입니다.</title>
+  </head>
+  <body>
+    <header><h1>기본 정보를 입력하세요~!</h1></header><section>
+      <div id="login">
+        <form class="" action="../../submit.do" method="post" name="login_form">
+          <p><input type="text" name="user_id" value="" placeholder="아이디로 쓰일 이메일을 입력하세요."></p>
+          <p><input type="password" name="user_passwd" value="" placeholder="비밀번호를 입력하세요."></p>
+          <p><input type="password" name="user_passwd2" value="" placeholder="비밀번호를 다시 입력하세요."></p>
+          <p><input type="text" name="user_name" value="" placeholder="이름을 입력하세요"></p>
+          <p id="gender">성별: 남 <input type="radio" name="user_gender" value="m" class="genderInput"> 여 <input type="radio" name="user_gender" value="f" class="genderInput"></p>
+          <p><input type="text" name="user_address" value="" placeholder="주소를 입력하세요"></p>
+          <input type="hidden" name="membership_code" value="membership_join">
+          <p id="a"><input type="button" name="login_bt" value="회원가입" onclick="isFilled()" id="button"></p>
+        </form>
+      </div>
+
+    </section>
+  </body>
+</html>

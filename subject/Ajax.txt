@@ -1,0 +1,676 @@
+1. Ajax의 주요 구성 요소
+
+XMLHttpRequest - 웹 서버와 통신 담당
+DOM - 문서 구조를 객체화
+CSS - UI의 색상, 크기 등을 제어
+자바스크립트 - 동적 웹 페이지 작성
+
+2. XMLHttpRequest 객체 구하기
+IE : new ActiveXObject("Msxml2.XMLHTTP");
+이외의 브라우저 : new XMLHttpRequest();
+
+<get 방식>
+//ajax에서 사용할 XMLHttpRequest객체를 얻어옴
+httpRequest = new ActiveXObject("Msxml2.XMLHTTP");	//getXMLHttpRequest();
+httpRequest = new XMLHttpRequest();
+
+//전송방식, 서버페이지, 동기/비동기
+httpRequest.open("GET", "./test.jsp?id=aaa&pwd=1111", true);	
+
+//요청전송
+httpRequest.send(null);
+
+--파라메터 한글처리
+var param="name="+encodeURIComponent("최범균");
+httpRequest.open("GET", "hello.jsp?"+param, true);
+
+<%
+  request.setCharacterEncoding("utf-8");
+  String name=request.getParameter("name");
+%>
+
+<post 방식>
+//ajax에서 사용할 XMLHttpRequest객체를 얻어옴
+httpRequest=getXMLHttpRequest();
+
+//전송방식, 서버페이지, 동기/비동기
+httpRequest.open("POST", "./test.jsp", true);	
+
+//요청전송
+httpRequest.send("id=aaa&pwd=1111");
+
+<서버 응답 처리>
+//결과를 받아왔을때 자동호출될 콜백함수 등록
+httpRequest.onreadystatechange=함수명
+
+<httpRequest 객체 상태>
+httpRequest.readyState == 1
+0 : 객체는 생성. 초기화되지 않은 상태
+1 : open 메서드가 호출되고 아직 send 메서드가 호출되지 않은 상태
+2 : send가 호출됐지만 status와 헤더는 도착하지 않은 상태
+3 : 데이터의 일부를 받은 상태
+4 : 데이터를 전부 받은 상태. 완전한 데이터의 이용 가능
+
+if(httpRequest.readyState == 1){
+	...
+}else if(httpRequest.readyState == 2){
+	...
+}
+
+<응답 상태>
+httpRequest.status == 200
+200 : 요청성공
+403 : 접근거부
+404 : 페이지 없음
+500 : 서버 오류 발생
+
+if(httpRequest.status == 200){
+	...
+}else{
+	...
+}
+
+<응답 데이터 사용>
+if(httpRequest.readyState == 4){
+    if(httpRequest.status == 200){
+	var txt=httpRequest.responseText;
+	...
+    }
+}
+
+<DOM(Document Object Model) API>
+Document sample-----------------------------------
+<books>
+	<book>
+        	<title>프로젝트 생존 전략</title>
+        	<author>스티브 맥코넬</author>
+	</book>
+	<book>
+        	<title>JSP 2.0 프로그래밍</title>
+        	<author>최범균</author>
+	</book>
+	<book>
+        	<title>웹 표준</title>
+        	<author>댄 씨더홈</author>
+	</book>
+</books>
+--------------------------------------------------------
+document 계층구조
+
+	           document
+               	|
+                    	books
+  |---------------------------|-----------------------------|
+book                         book                          book
+  |                           |                             |
+|--------------|        |--------------|                 |--------------|
+title       author     title         author            title          author
+  |            |         |              |                |              |
+text         text      text           text              text           text
+
+------------------------------------------------------------
+
+Document - 전체 문서
+Element - 각 태그
+Text - 문자열 데이터
+CDataSection - XML 문서의 CDATA 영역의 문자열 값
+
+Node 인터페이스 주요 프로퍼티
+(String)nodeName - 노드이름
+(String)nodeValue - 노드의 값
+(unsigned short)nodeType - 노드타입
+(Node)parentNode - 부모노드
+(NodeList)childNodes - 자식노드목록
+(Node)firstChild - 첫 번째 자식 노드
+(Node)lastChild - 마지막 자식 노드
+(Node)previousSibling - 부모의 이전 자식 노드
+(Node)nextSibling - 부모의 다음 자식 노드
+(Document)ownerDocument - 이 노드가 포함된 Document 객체
+
+-------------------------------------------------
+<html>
+<head><title>제목</title></head>
+<body>
+<div id="a">a</div>
+<div id="b">b</div>
+<div id="c">c</div>
+</body>
+</html>
+--------------------------------------------------
+
+var htmlNode = document.documentElement;
+var bodyNode = htmlNode.lastChild;
+var lastDivNode = bodyNode.lastChild;
+var textNode = lastDivNode.firstChild;
+var strValue = textNode.nodeValue;
+
+---------------------------------------------------
+
+NodeList getElementsByTagName(String tagName) - 
+지정한 이름의 모든 Element 목록 반환
+Element getElementById(String elementId) - id 속성의 값이 elementId인 태그 반환
+
+---------------------------------------------------
+var spanList = document.getElementByTagName("div");
+for(var i=0;i<spanList.length;i++){
+   var span=spanList.item(i);
+   ...
+}
+
+------------------------------------------------------
+var bSpan = document.getElementById("b");
+------------------------------------------------------
+
+<Element 인터페이스 주요 프로퍼티 및 함수>
+String getAttribute(String name) - name에 해당하는 속성의 값 반환
+setAttribute(String name, String value) - 이름이 name인 속성의 값을 value로 설정
+removeAttribute(String name) - 이름이 name인 속성을 제거
+
+<DOM API를 사용한 문서 구조 변환>
+*Document 인터페이스의 Element 노드 생성 함수
+Element createElement(String tagName) - 지정한 태그 이름을 갖는 Element 노드를 생성
+Text createTextNode(String text) - text를 값으로 갖는 Text노드를 생성
+
+sample code
+------------------
+var pNode = document.createElement("p");
+var textNode = document.createTextNode("테스트");
+pNode.appendChild(textNode);
+=>실행결과
+<p>테스트</p>
+
+*Node 인터페이스의 Dom 트리 변경 함수
+Node insertBefore(Node newChild, Node refChild) - 현재 노드의 자식 노드인 refChild
+				노드의 previous 자리에 newChild 추가
+Node replaceChild(Node newChild, Node oldChild) - 현재 노드의 자식 노드인 oldChild
+				노드를 새로운 newChild노드로 교체
+Node removeChild(Node oldChild) - 현재 노드의 자식 노드인 oldChild를 현재 노드에서
+				제거
+Node appendChild(Node newChild) - newChild 노드를 현재 노드의 마지막 자식 노드로
+				 추가
+
+
+sample code
+-----------------------------------------------------------------------
+var spanNode = document.createElement("span");
+spanNode.setAttribute("id", "b");
+var aNode = document.getElementById("a");
+aNode.appendChild(spanNode);
+
+=>실행결과
+<span id="a"><span id="b"></span></span>
+-----------------------------------------------------------------------
+var pTag = document.createElement("p");
+var aNode = document.getElementById("a");
+var bodyNode = aNode.parentNode;
+bodyNode.insertBefore(pTag, aNode);
+
+=>실행결과
+<body>
+<p></p>
+<span id="a"></span>
+</body>
+-----------------------------------------------------------------------
+
+<XSL/T를 이용한 XML을 HTML로 변환>
+XSL 파일 : XML을 HTML로 변환하기 위한 규칙을 담고 있는 파일
+*변환절차
+1. XML 문서 읽어온다.
+2. XSL 문서 읽어온다.
+3. 변환 - IE : bookList.innerHTML = xmlDoc.transformNode(xslDoc);
+          그 외의 브라우저 - var xsltProc = new XSLTProcessor();
+		             xsltProc.importStylesheet(xslDoc);
+		             var fragment = xsltProc.transformToFragment(xmlDoc, document);
+		             bookList.appendChild(fragment);
+
+<자바스크립트 객체 . JSON 표기법>
+Member = function(id, name){
+  this.id=id;
+  this.name=name;
+}
+
+var mem=new Member("era13", "최범균");
+
+*클래스에 함수 추가
+클래스이름.prototype.함수이름 = function(파라메터){
+ ...
+}
+Member.prototype.setValue = function(newId, newName){
+  this.id=newId;
+  this.name=newName;
+}
+var mem=new Member("era13", "최범균");
+mem.setValue("newEra13", "최범균2");
+
+Member.prototype.toString = function(){
+  return this.id+"["+this.name+"]";
+}
+var mem=new Member("era13", "최범균");
+var dest=mem.toString();
+alert(dest);
+
+<JSON 표기법>
+여러개의 데이터를 배열이나, 맵 형태로 표현
+{이름1:값1, 이름2:값2, 이름3:값3}
+{값1, 값2, 값3 ...}
+
+sample code
+-------------------------------------------------------------------------
+값 저장 방법
+var countries = {ko:'대한민국', fr:'프랑스', uk:'영국'}
+
+저장된 값에 접근 방법
+1)var koName = countries.ko;
+2)var frName = countries['fr'];
+
+var member = {
+  name : '최범균',
+  favorateColors : ['파랑', '노랑', '빨강']
+};
+var message = member.name+'님이 좋아하는 색상은 '+member.favorateColors.length+
+                        '개 이고, '+'그 중 첫번째 색상은 ' +member.favorateColors[0]+'입니다.';
+---------------------------------------------------------------------------
+<JSON 표기법으로 클래스 및 패키지 정의>
+클래스이름 = function(param){
+  ...
+}
+클래스 이름.prototype = {
+  함수명1:function(param1){
+	...
+  },
+  함수명2:function(param2){
+	...
+  }
+}
+
+*패키지 정의
+var ajax=new Object();
+ajax.Request = function(){
+  ...
+}
+ajax.Request.prototype = {
+  someFunction:function(){
+    ...
+  },
+  ...
+}
+
+var req = new ajax.Request();
+req.someFunction();
+--------------------------------
+var ajax = new Object();
+ajax.xhr = new Object();
+ajax.xhr.Request = function(){
+  ...
+}
+
+var req=new ajax.xhr.Request();
+---------------------------------
+var ajax={};
+ajax.xhr.Request = function(){
+  ...
+}
+
+<이벤트 리스너 방식 처리>
+a) IE 이외의 브라우저
+
+*이벤트 핸들러 등록
+var btn1 = document.getElementById("btn1");
+btn1.addEventListener("click", doProcess, false);
+
+*등록된 이벤트 핸들러 제거
+var btn1 = document.getElementById("btn1");
+btn1.removeEventListener("click", doProcess, false);
+
+
+B) IE 브라우저
+
+*이벤트 핸들러 등록
+var btn1 = document.getElementById("btn1");
+btn1.attachEvent("onclick", doProcess);
+
+*등록된 이벤트 핸들러 제거
+
+var btn1 = document.getElementById("btn1");
+btn1.detachEvent("onclick", doProcess);
+
+*이벤트 객체
+IE : window.event
+=>이벤트 대상 객체 : srcElement
+  var e = window.event	//이벤트 객체
+  e.srcElement	//이벤트 대상 객체
+그 이외:function doClickOnBtn1(e){  ...  }		//e:이벤트 객체
+=>e.target	//이벤트 대상 객체
+
+<마우스 이벤트의 종류>
+click
+dblclick
+mousedown - 마우스를 눌렀을 때
+mouseup - 마우스를 뗐을 때
+mouseover - 마우스가 영역 안으로 들어왔을 때
+mouseout - 마우스가 영역 밖으로 나갈 때
+mousemove - 마우스가 영역 안에서 움직일 때
+
+<마우스 이벤트 발생 위치>
+screenX, screenY : 전체 화면에서의 XY 좌표값
+clientX, clientY : 웹 브라우저 내에서의 좌표값
+
+<마우스 클릭 버튼 판별>
+*IE 브라우저
+	button
+왼쪽 : 	1
+오른쪽:	2
+휠:	4
+=>왼쪽 버튼의 button 속성값이 click 이벤트 일때는 0, mousedown, mouseup 이벤트 일때는 1
+
+*그 이외의 브라우저
+	button	which
+왼쪽:	0	1
+오른쪽:	2	3
+휠:	1	2
+
+<키보드 이벤트>
+*이벤트
+keydown : 키보드를 누를 때
+keyup : 키보드에서 뗄 때
+keypress : 키보드를 누를 때(비표준)
+
+*프로퍼티
+keyCode : 키 코드 값
+ctrlKey : Ctrl 키를 누른 경우 true
+shiftKey : Shift 키를 누른 경우 true
+altKey : Alt 키를 누른 경우 true
+
+<이벤트 흐름>
+캡처 단계 - 이벤트가 발생 대상까지 전달되는 단계
+대상 단계 - 이벤트가 발생 대상에 도달한 단계
+버블링 단계 - 발생 대상에서 document까지 전달되는 단계
+
+*이벤트 전파 중지
+웹 표준 : stopPropagation()
+IE : event.cancelBubble = true
+
+(submit과 같은)기본 이벤트 중지
+웹 표준 : event.preventDefault()
+IE : event.returnValue = false
+
+=============================================================
+**** jquery ******
+<script>
+$(document).ready(function (){
+	//jquery code
+});
+</script>
+
+
+1. 기본 선택자
+$('h1').css('background', 'orange');
+  ----  ----------------------------
+ 선택자         메서드
+
+*전체 선택자
+ $('*')
+
+*태그 선택자
+ $('h1')
+ $('h1, p')
+
+*아이디 선택자
+<body> <h1 id="target">test</h1> </body>
+$('#target')
+$('h1#target')
+
+*클래스 선택자
+<body> 
+<h1 class="item">test1</h1> 
+<h1 class="item select">test2</h1>
+<h1 class="item">test3</h1>
+</body>
+$('.item').css('background', 'orange');		//문서 전체에서 클래스가 item인 모든 항목
+$('h1.item').css('color', 'red');		//h1 태그 중에서 클래스가 item인 모든 항목
+$('.item.select').css('color', 'blue');		//클래스가 item select인 모든 항목
+
+*자식 선택자
+$('body > h1')
+$('body > *')
+
+*후손 선택자
+$('body *')
+
+*속성 선택자
+요소[속성] : 특정 속성을 가지고 있는 객체 선택
+요소[속성=값] : 속성 안의 값이 특정 값과 같은 객체 선택
+요소[속성~=값] : 속성 안의 값이 특정 값을 단어로써 포함하는 객체 선택
+요소[속성^=값] : 속성 안의 값이 특정 값으로 시작하는 객체 선택
+요소[속성$=값] : 속성 안의 값이 특정 값으로 끝나는 객체 선택
+요소[속성*=값] : 속성 안의 값이 특정 값을 포함하는 객체 선택
+
+*입력 양식 필터 선택자
+-아래의 선택자 이름과 동일한 객체 선택
+button
+checkbox
+file
+image
+password
+radio
+reset
+submit
+text
+
+*입력 양식 필터 선택자2
+checked : 체크된 입력 양식 선택
+disabled : 비활성화된 입력 양식 선택
+focus : 포커스된 입력 양식 선택
+input : 모든 입력 양식 선택
+selected : option 객체 중 선택된 태그 선택
+
+*기본 필터 선택자
+요소:odd - 홀수 번째 객체를 선택
+요소:even - 짝수 번째 객체를 선택
+요소:first - 첫 번째 객체를 선택
+요소:last - 마지막 번째 객체를 선택
+
+*함수 필터 선택자
+요소:contains(문자열) - 특정 문자열을 포함하는 객체 선택
+요소:eq(n) - n번째에 위치하는 객체 선택
+요소:gt(n) - n번째 초과하는 위치에 있는 객체 선택
+요소:has(h1) - h1 태그를 가지고 있는 객체 선택
+요소:lt(n) - n번째 미만에 위치하는 객체 선택
+요소:not(선택자) - 선택자와 일치하지 않는 객체 선택
+요소:nth-child(3n+1) - 3n+1번째 위치하는 객체 선택(1, 4, 7...)
+
+2. 배열 관리
+$.each(object, function(index, item){})
+$(selector).each(object, function(index, item){})
+
+3. 객체 확장
+var object = {};
+object.name = 'aaa';
+object.gender = 'male';
+object.part = 'second guitar';
+
+jquery에서 객체 확장 : $extend() 메서드 활용
+var object = {name:'aaa'};
+$.extend(object, {gender:'male', part:'second guitar'});
+
+4. 기본 필터링 메서드
+
+*filter() : 객체 필터링
+$(selector).filter(selector);
+$(selector).filter(function(){});
+=>
+$('h3').filter(':even').css({backgroundColor: 'Black',color: 'White'});
+
+*end() : 객체 선택을 한 단계 뒤로 돌림
+체이닝 코딩
+  $('h1').css('background', 'Orange');
+  $('h1').filter(':even').css('color', 'Red');
+=>
+  $('h1').css('background', 'Orange').filter(':even').css('color', 'Red');
+
+다음 코드를 체이닝 할 수 있을까?
+  $('h1').css('background', 'Orange');
+  $('h1:even').css('color', 'White');
+  $('h1:odd').css('color', 'Red');
+=>
+  $('h1').css('background', 'Orange').filter(':even').css('color', 'White').filter(':odd').css('color', 'Red');
+ 잘못된 표현
+
+이때 end() 활용
+  $('h1').css('background', 'Orange').filter(':even').css('color', 'White').end().filter(':odd').css('color', 'Red');
+
+*특정 위치 객체 선택 메서드
+eq() - 특정 위치 객체 선택(음수값은 뒤로부터의 순서 ex. -1 : 뒤에서 첫번째)
+first() - 첫 번째 객체 선택
+last() - 마지막 객체 선택
+
+*add() - 객체를 추가로 선택
+$('h1').css('background', 'Gray').add('h2').css('float', 'left');
+
+*is() - 객체의 특징 판별
+
+*find() - 특정 태그 선택
+
+5. 객체 조작
+*addClass() : 객체의 클래스 속성 추가
+$('h1').addClass('item');
+=>
+<h1 class='item'>aaa</h1>
+<h1 class='item'>bbb</h1>
+<h1 class='item'>ccc</h1>
+
+$('h1').addClass(function(index){
+	return 'class'+index;
+});
+=>
+<h1 class='class0'>aaa</h1>
+<h1 class='class1'>bbb</h1>
+<h1 class='class2'>ccc</h1>
+
+*removeClass() : 객체의 클래스 속성 제거
+<h1 class='item'>aaa</h1>
+<h1 class='item select'>bbb</h1>
+<h1 class='item'>ccc</h1>
+
+$('h1').removeClass('select');
+=>
+<h1 class='item'>aaa</h1>
+<h1 class='item'>bbb</h1>
+<h1 class='item'>ccc</h1>
+
+*attr() : 객체 속성 검사 및 추가
+$('img').attr('src');			//속성 검사
+$('img').attr('src', 'a.jpg');		//속성 추가
+
+*removeAttr(속성명) : 속성 제거
+
+*css() : 스타일과 관련된 모든 기능 수행
+$('h1').css('color');	//h1태그의 글자 색상 검사
+$('h1').css('color', 'red');	//h1태그의 글자 색상 설정
+$('h1').css('color', function(index){return myColor[index]});//h1태그의 글자 색상을 함수 반환값으로 설정
+
+*html() : 객체 내부의 글자와 관련된 모든 기능을 수행(html 태그 실행). 값을 읽을 경우 첫 번째 객체의 값만 읽어옴
+*text() : 객체 내부의 글자와 관련된 모든 기능을 수행(html 태그 실행하지 않고 출력). 값을 읽을 경우 모든 객체의 값을 읽어옴
+
+*remove() : 객체 제거
+*empty() : 객체의 후손을 모두 제거
+
+*$() : 객체 생성
+$('<h1></h1>').html('hello world');
+$('<img />').attr('src', 'a.jpg');
+
+*객체 삽입 메서드들
+$(A).appendTo(B) : A를 B의 뒷 부분에 추가
+$(A).prependTo(B) : A를 B의 앞 부분에 추가
+$(A).insertAfter(B) : A를 B의 뒤에 추가
+$(A).insertBefore(B) : A를 B의 앞에 추가
+
+$(A).append(B) : B를 A의 뒷 부분에 추가
+$(A).prepend(B) : B를 A의 앞 부분에 추가
+$(A).after(B) : B를 A의 뒤에 추가
+$(A).before(B) : B를 A의 앞에 추가
+
+6. 이벤트 처리
+
+*bind() : 이벤트 연결
+$('h1').bind('click', function(){$(this).html(function(index, html){return html+'+'});});
+
+*단축 이벤트 메서드
+ex> $('h1').click(함수)
+blur/ focus / focusin /focusout / load / resize / scroll /unload / click / dblclick / mousedown / mouseup / mousemove / mouseover / mouseout / mouseenter / mouseleave / change / select / submit / keydown / keypress / keyup / error / ready
+
+*toggle() : click 이벤트를 여러 이벤트 핸들러를 번갈아가며 실행
+*hover() : mouseenter와 mouseleave 이벤트를 동시에 연결
+
+*이벤트를 제거
+unbind() : 객체의 모든 이벤트를 제거
+unbind(이벤트 명) : 객체의 파라메터로 지정된 이벤트만 제거
+unbind(이벤트 명, 함수명) : 객체의 파라메터로 지정된 이벤트에 등록된 핸들러 중 파라메터로 지정된 함수만 제거
+
+*context 매개변수
+$(selector, context) : selector가 적용하는 범위 한정
+
+*trigger() : 이벤트를 강제 발생
+예>$(selector).trigger(eventName)
+
+*preventDefault() : 기본 이벤트 제거
+*stopPropagation() : 이벤트 전달 중단
+
+*마우스 이벤트
+click / dblclick / mousedown / mouseup / mouseenter(마우스가 요소의 경계 외부에서 내부로 이동할때 발생) / mouseleave(마우스가 요소의 경계 내부에서 외부로 이동할때 발생) / mousemove(마우스 움직일때 발생) / mouseout(마우스가 요소를 벗어날 때 발생) / mouseover(마우스가 요소 안에 들어올 때 발생)
+
+*윈도우 이벤트
+ready(객체가 준비 완료) / load(윈도우 객체를 불려올때) / unload(윈도우 객체를 닫을 때) / resize(윈도우의 크기를 변화시킬 때) / scroll(윈도우 스크롤할 때) / error(에러 발생 시)
+
+*키보드 이벤트
+keydown(키보드가 눌려질 때) / keypress(글자가 입력될 때) / keyup(키보드가 떼어질 때)
+
+*입력 양식 이벤트
+change(입력 양식의 내용을 변경할 때) / focus(입력 양식이 초점을 얻었을때) / focusin(입력 양식에 초점이 맞춰지기 바로 전) / focusout(입력 양식에 초점이 사라지기 바로 전) / blur(입력 양식에 초점이 사라질때) / select(입력 양식을 선택할 때) / submit(submit 버튼을 누르면 발생) / reset(reset 버튼을 누르면 발생)
+
+7. jquery ajax
+$.ajax(options);	//$.ajax({url:'/home/a.jsp', success:function(data){//todo}});
+$.ajax(url, options);	//$.ajax('/home/a.jsp', {success:function(data){//todo}});
+
+*options
+async : 동기, 비동기 지정. (값 타입 : boolean)
+complete(Xreq, textStatus) : ajax 완료 이벤트 핸들러 지정. (값 타입 : 함수)
+data : 요청 매개변수. (값 타입 : object, String)
+error(Xreq, textStatus, errorThrown) : ajax 실패 이벤트 핸들러 지정. (값 타입 : 함수)
+success(data, textStatus, Xreq) : ajax 성공 이벤트 핸들러 지정. (값 타입 : 함수, 배열)
+timeout : 만료 시간 지정. (값 타입 : number)
+type : 'get'이나 'post'지정. (값 타입 : String)
+url : 대상 url 지정. (값 타입 : String)
+
+*jquery ajax 부가 메서드
+$.get() : get 방식으로 ajax 실행
+$.post() : post 방식으로 ajax 실행
+$.getJSON() : get 방식으로 ajax 실행해 JSON 데이터 가져옴
+$.getScript() : get 방식으로 ajax 실행해 Script 데이터 가져옴
+$(selector).load() : ajax 실행한 후 선택자로 선택한 객체 안에 응답받을 문자열을 넣는다.
+
+*xml 다루기
+$.ajax('/home/a.jsp', {success:function(data){
+	$(data).find('person').each(function(){
+		//todo
+	}
+}
+});
+
+8. 유효성 검사
+*유효성 검사 종류
+required : 필수사항
+email : 이메일 형식
+url : url 주소 형식
+date : 날짜 형식
+dateISO : ISO 날짜 형식
+number : 숫자 형식
+digits : 정수 숫자 형식
+creditcard : 신용카드 형식
+equalTo : 값이 같아야 하는 다른 대상 지정
+maxlength : 최대 문자 길이
+minlength : 최소 문자 길이
+rangelength : 문자 길이
+range : 숫자 범위
+max : 최대 숫자
+min : 최소 숫자

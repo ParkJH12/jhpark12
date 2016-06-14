@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+<script type="text/javascript">
+	function bt1Click() {
+		alert("!!");
+	}
+
+	function formchk() {
+		var form = document.frm1;
+
+		if(form.p_name.value=="") {
+			alert("p_name 값을 입력하세요.");
+			form.p_name.focus();
+		} else if (form.p_pass.value=="") {
+      alert("p_pass 값을 입력하세요.");
+			form.p_pass.focus();
+    }
+	}
+</script>
+   <title>Insert title here</title>
+   </head>
+   <body>
+     <!-- <iframe src="http://www.daum.net" width="" height="" name="a"></iframe> -->
+  <form class="" action="submit.jsp" method="post" name="frm1">
+    <input type="text" name="p_name" value=""><br>
+    <input type="password" name="p_pass" value=""><br>
+    <input type="radio" name="p_radio" value="a"><br>
+    <input type="radio" name="p_radio" value="b"><br>
+    <input type="radio" name="p_radio" value="c"><br>
+
+    <input type="radio" name="p_radio1" value="a"><br>
+    <input type="radio" name="p_radio1" value="b"><br>
+    <input type="radio" name="p_radio1" value="c"><br>
+
+    <input type="checkbox" name="p_check" value="a"><br>
+    <input type="checkbox" name="p_check" value="b"><br>
+    <input type="checkbox" name="p_check" value="c"><br>
+    <select class="" name="p_combo">
+      <option value="skt">skt</option>
+      <option value="kt">kt</option>
+      <option value="lg">lg</option>
+    </select><br>
+    <textarea name="p_textarea" rows="8" cols="40"></textarea>
+    <input type="button" name="name" value="확인" onclick="formchk()">
+  </form>
+</body>
+</html>

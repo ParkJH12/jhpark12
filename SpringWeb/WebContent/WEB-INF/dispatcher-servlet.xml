@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/view/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		id="dataSource">
+
+		<property name="driverClassName">
+			<value>oracle.jdbc.driver.OracleDriver</value>
+		</property>
+
+		<property name="url">
+			<value>jdbc:oracle:thin:@localhost:1521:XE</value>
+		</property>
+
+		<property name="username">
+			<value>hr</value>
+		</property>
+
+		<property name="password">
+			<value>hr</value>
+		</property>
+	</bean>
+	
+	
+	<bean name="addrDao" class="addr.DaoImpl">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+
+
+	<bean name="addrService" class="addr.ServiceImpl" p:dao-ref="addrDao">
+	</bean>
+
+	<bean name="addrController" class="addr.addrController">
+		<property name="service">
+			<ref bean="addrService" />
+		</property>
+	</bean>
+</beans>
